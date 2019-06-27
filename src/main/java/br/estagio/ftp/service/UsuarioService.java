@@ -21,7 +21,11 @@ public class UsuarioService {
 
 
     public List<Usuario> listarTodos() {
-        return repo.findAll();
+        List<Usuario> lista = repo.findAll();
+        if(lista.isEmpty()){
+            throw new ObjetoNaoEncontradoException("O arquivo não possui usuarios ");
+        }
+        return lista;
     }
 
 
@@ -37,8 +41,8 @@ public class UsuarioService {
 
         Optional<Usuario> optional = this.repo.findById(id);
 
-
-        return optional.orElseThrow(() -> new ObjetoNaoEncontradoException("asd"));
+        return optional.orElseThrow(() ->
+                new ObjetoNaoEncontradoException("O usuario: "+id+" não foi localizado"));
     }
 
 
@@ -48,17 +52,14 @@ public class UsuarioService {
 
     public Usuario alterarUsuario(Usuario u)  {
 
-        Usuario usuario = this.consultarId(u.getIdUsuario());
+        this.consultarId(u.getIdUsuario());
 
-        if (usuario == null) {
-            return null;
-        }
-        usuario = this.repo.save(u);
+        return this.repo.save(u);
 
-        return usuario;
     }
 
     public void deletarUsuario(String id) {
+        this.consultarId(id);
         this.repo.deleteById(id);
     }
 

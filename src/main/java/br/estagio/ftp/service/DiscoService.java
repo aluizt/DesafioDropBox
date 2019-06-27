@@ -2,7 +2,6 @@ package br.estagio.ftp.service;
 
 import br.estagio.ftp.model.Arquivos;
 import br.estagio.ftp.service.exception.ErroAoSalvarArquivoException;
-import br.estagio.ftp.service.exception.ObjetoNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

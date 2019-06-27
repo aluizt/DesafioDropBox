@@ -1,7 +1,7 @@
 package br.estagio.ftp.model;
 
 
-import br.estagio.ftp.control.UsuarioControl;
+import br.estagio.ftp.control.UsuariosControl;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.List;
 public class UsuarioHateoasAssembler extends ResourceAssemblerSupport<Usuario, UsuarioHateoas> {
 
     public UsuarioHateoasAssembler() {
-        super(UsuarioControl.class, UsuarioHateoas.class);
+        super(UsuariosControl.class, UsuarioHateoas.class);
     }
 
     @Override

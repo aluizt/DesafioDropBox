@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/uploads")
-public class UploadControl {
+public class UploadsControl {
 
     @Autowired
     private DiscoService discoService;

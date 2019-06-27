@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @ExposesResourceFor(UsuarioHateoas.class)
 @RequestMapping(value = "/usuarios")
-public class UsuarioControl {
+public class UsuariosControl {
 
     @Autowired
     private UsuarioService service;
@@ -75,9 +75,7 @@ public class UsuarioControl {
 
             UsuarioHateoasAssembler usuarioHateoasAssembler = new UsuarioHateoasAssembler();
             UsuarioHateoas usuarioHateoas=usuarioHateoasAssembler.toResource(this.service.consultarId(id));
-            if(usuarioHateoas==null){
-                return new ResponseEntity<>(usuarioHateoas, HttpStatus.NOT_FOUND);
-            }
+
             return new ResponseEntity<>(usuarioHateoas, HttpStatus.OK);
     }
 
@@ -105,15 +103,12 @@ public class UsuarioControl {
             @ApiResponse(code = 404, message = "Não foi encontrado este usuario")
     }
     )
-    public ResponseEntity<UsuarioHateoas> alterarUsuario(@PathVariable("id") String id, @RequestBody Usuario usuario)  {
+    public ResponseEntity<UsuarioHateoas> alterarUsuario(@PathVariable("id") String id, @RequestBody Usuario usuario){
 
         usuario.setIdUsuario(id);
         UsuarioHateoasAssembler usuarioHateoasAssembler = new UsuarioHateoasAssembler();
         UsuarioHateoas usuarioHateoas =usuarioHateoasAssembler.toResource(this.service.alterarUsuario(usuario));
 
-        if(usuarioHateoas==null){
-            return new ResponseEntity<>(usuarioHateoas, HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(usuarioHateoas, HttpStatus.OK);
     }
 
