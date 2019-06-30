@@ -8,12 +8,15 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -36,29 +39,10 @@ public class UploadControl {
             @ApiResponse(code = 403, message = "Você não tem acesso a este recurso")
     }
     )
-    public ResponseEntity<Arquivos> upload(@RequestParam MultipartFile arquivo, @PathVariable(value = "id") String id) throws Throwable {
+    public void upload(@RequestParam MultipartFile arquivo, @PathVariable(value = "id") String id)  {
         Usuario usuario = this.uploadService.localizarId(id);
-        if(usuario==null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(this.discoService.salvarArquivo(arquivo,id),HttpStatus.OK);
+        this.uploadService.upload(arquivo,usuario);
     }
-
-
-
-
-    @ApiOperation(value = "Efetua o upload de varios arquivos " )
-    @PostMapping(value = "/multiplos/{id}")
-    public void multiplosUploads(@RequestParam() MultipartFile[] arquivo, @PathVariable(value = "id") String id) throws Throwable {
-        System.out.println(arquivo);
-
-        for(MultipartFile m:arquivo){
-            upload(m,id);
-        }
-
-    }
-
-
 
 
     @ApiOperation(value = "Compartilha um arquivo com outros usuarios " )
@@ -78,23 +62,11 @@ public class UploadControl {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
-
     @ApiOperation(value = "Lista uploads do usuario " )
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Arquivos> listarArquivos(@PathVariable(value = "id") String id) throws Throwable {
-
-        Arquivos arquivos = this.discoService.listarArquivos(id);
-
-        if(arquivos==null){
-            return  new ResponseEntity<>(arquivos,HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(arquivos,HttpStatus.OK);
+    public ResponseEntity<FTPFile[]> listarArquivos(@PathVariable(value = "id") String id) {
+        return new ResponseEntity<>(this.uploadService.listarUploads(id),HttpStatus.OK);
     }
-
-
-
 
     @ApiOperation(value = "Lista arquivos dos amigos que estão compartilhados com o usuario" )
     @GetMapping(value = "/compartilhados/{id}")
@@ -111,9 +83,6 @@ public class UploadControl {
         return new ResponseEntity<>(arquivos,HttpStatus.OK);
     }
 
-
-
-
     @ApiOperation(value = "Deleta arquivo do usuario " )
     @DeleteMapping(value = "/{id}")
     public ResponseEntity removerArqvuivo(
@@ -129,6 +98,7 @@ public class UploadControl {
         }
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
+
 
 
 }
