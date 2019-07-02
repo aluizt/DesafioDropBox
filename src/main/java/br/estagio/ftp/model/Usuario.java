@@ -19,4 +19,7 @@ public class Usuario  {
     private String nomeUsuario;
     private String cpf;
     private List<Amigos> amigos;
+
+
+
 }

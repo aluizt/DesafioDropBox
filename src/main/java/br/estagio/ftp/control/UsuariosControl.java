@@ -2,6 +2,7 @@ package br.estagio.ftp.control;
 
 
 import br.estagio.ftp.model.Usuario;
+import br.estagio.ftp.model.UsuarioDTO;
 import br.estagio.ftp.model.UsuarioHateoas;
 import br.estagio.ftp.model.UsuarioHateoasAssembler;
 import br.estagio.ftp.service.UsuarioService;
@@ -87,11 +88,10 @@ public class UsuariosControl {
             @ApiResponse(code = 403, message = "Você não tem acesso a este recurso"),
     }
     )
-    public ResponseEntity<UsuarioHateoas> incluir(@RequestBody Usuario usuario){
+    public ResponseEntity<Usuario> incluir(@RequestBody UsuarioDTO usuarioDTO){
 
-        UsuarioHateoasAssembler usuarioHateoasAssembler = new UsuarioHateoasAssembler();
-        UsuarioHateoas usuarioHateoas =usuarioHateoasAssembler.toResource(this.service.incluirUsuario(usuario));
-        return new ResponseEntity<>(usuarioHateoas, HttpStatus.CREATED);
+       return new ResponseEntity<>(this.service.incluirUsuario(usuarioDTO.dtoFromUsuario()),HttpStatus.CREATED);
+
     }
 
     @PutMapping(value = "/{id}")

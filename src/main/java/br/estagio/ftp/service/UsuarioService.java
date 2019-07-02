@@ -41,12 +41,13 @@ public class UsuarioService {
 
         Optional<Usuario> optional = this.repo.findById(id);
 
-        return optional.orElseThrow(() ->
-                new ObjetoNaoEncontradoException("O usuario: "+id+" não foi localizado"));
+        return optional.orElseThrow(() -> new ObjetoNaoEncontradoException("Usuario não esta cadastrado !!"));
+
     }
 
 
     public Usuario incluirUsuario(Usuario usuario) {
+
         return this.repo.save(usuario);
     }
 
