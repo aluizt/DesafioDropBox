@@ -23,7 +23,6 @@ import java.util.Map;
 @Service
 public class UploadService {
 
-
     private UsuarioService usuarioService;
     private AmigoService amigoService;
     private ConectServer conectServer;
@@ -50,31 +49,34 @@ public class UploadService {
 
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-            try {
-                ftpClient.storeFile(arquivo.getOriginalFilename(),arquivo.getInputStream());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }finally {
-                ftpClient.disconnect();
-            }
+            ftpClient.storeFile(arquivo.getOriginalFilename(),arquivo.getInputStream());
+
 
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                ftpClient.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     public FTPFile[] listarUploads(String id){
 
         Usuario usuario = this.usuarioService.consultarId(id);
+        FTPFile[] files = new FTPFile[0];
 
         FTPClient ftpClient = getConexao(usuario);
 
         try {
 
-            FTPFile[] files = ftpClient.listFiles();
+            files = ftpClient.listFiles();
 
             if(files.length==0){
-                return null;
+                throw new ObjetoNaoEncontradoException("Este usuário não possui arquivos para exibição !!");
             }
             return files;
 
@@ -82,8 +84,9 @@ public class UploadService {
             e.printStackTrace();
         }
 
-        return  null;
+        return  files;
     }
+
 
     public Page<FTPFile> listarUploadsPaginados(String id,int page, int count){
 
@@ -101,6 +104,54 @@ public class UploadService {
 
         return  null;
     }
+
+    private Page<FTPFile> getPaginacao(FTPFile[] files,int page, int count){
+
+        PageRequest pageRequest = new PageRequest(page,count);
+
+        List<FTPFile> lista = new ArrayList<>();
+        for(FTPFile f:files){
+            lista.add(f);
+        }
+
+        int max = (count*(page+1)>lista.size())? lista.size():count*(page+1);
+
+        Page<FTPFile> ftpFilePage ;
+
+        ftpFilePage= new PageImpl<>(lista.subList(page*count,max), pageRequest,lista.size());
+
+        return  ftpFilePage;
+
+    }
+
+
+    public List<String> listaUploadsPorTipo(String estensao, String id){
+
+        Usuario usuario = this.usuarioService.consultarId(id);
+
+        FTPClient ftpClient = getConexao(usuario);
+
+        List<String> listaDeArquivos = new ArrayList<>();
+
+        final String sufixo = "."+estensao;
+
+        try{
+            FTPFile[] lista= ftpClient.listFiles();
+
+            for (FTPFile f:lista){
+                if(f.getName().endsWith(sufixo)){
+                    listaDeArquivos.add(f.getName());
+                }
+            }
+            if(listaDeArquivos.isEmpty()){
+                throw new ObjetoNaoEncontradoException("Não foi encontrado arquivos com este formato !!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return listaDeArquivos;
+    }
+
 
     public void removerArquivo(String nomeArquivo, String id){
 
@@ -121,7 +172,6 @@ public class UploadService {
         Usuario usuario = this.usuarioService.consultarId(id);
         FTPClient ftpClient = getConexao(usuario);
 
-
         try {
             FileOutputStream fileOutputStream =
                     new FileOutputStream("/home/alexandre/Downloads/"+nomeArquivo);
@@ -130,8 +180,6 @@ public class UploadService {
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             ftpClient.retrieveFile(nomeArquivo,fileOutputStream);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -144,26 +192,6 @@ public class UploadService {
         return this.usuarioService.consultarId(id);
     }
 
-    private Page<FTPFile> getPaginacao(FTPFile[] files,int page, int count){
-
-        PageRequest pageRequest = new PageRequest(page,count);
-
-        List<FTPFile> lista = new ArrayList<>();
-        for(FTPFile f:files){
-            lista.add(f);
-        }
-
-        lista.forEach(f -> System.out.println(f.getName()));
-
-        int max = (count*(page+1)>lista.size())? lista.size():count*(page+1);
-
-        Page<FTPFile> ftpFilePage =
-                new PageImpl<FTPFile>(lista.subList(page*count,max),
-                                           pageRequest,lista.size());
-
-        return  ftpFilePage;
-
-    }
 
 
     private FTPClient getConexao(Usuario usuario){
@@ -202,4 +230,7 @@ public class UploadService {
 
         return mapa;
     }
+
+
+
 }

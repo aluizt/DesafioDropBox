@@ -1,14 +1,17 @@
 package br.estagio.ftp.service;
 
-import br.estagio.ftp.model.Usuario;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 public class FtpService {
+
+    private static final Logger logger = LoggerFactory.getLogger(FtpService.class);
 
     public FTPClient verificaDiretorio(String id, FTPClient ftpClient){
 
@@ -24,10 +27,10 @@ public class FtpService {
                 }
             }
 
-            if(direorioExiste==false) {
+            if(!direorioExiste) {
                 if (ftpClient.makeDirectory(id)) {
-                    System.out.println("diretorio criado");
-                } else System.out.println("diretorio nao criado");
+                    logger.info("Diretorio criado");
+                } else logger.info("Diretorio nao criado");
             }
 
             return alteraDiretorio(ftpClient, id);
@@ -43,9 +46,10 @@ public class FtpService {
 
         try {
            if(ftpClient.changeWorkingDirectory(id)){
-               System.out.println("trocou de diretorio "+id);
+               String log = "Trocou de diretorio "+id;
+               logger.info(log);
 
-           }else System.out.println("não troucou de diretorio");
+           }else logger.info("não troucou de diretorio");
 
         } catch (IOException e) {
             e.printStackTrace();

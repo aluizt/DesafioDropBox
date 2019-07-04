@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -20,6 +21,17 @@ public class UsuarioHateoas extends ResourceSupport {
     private String cpf;
     private List<Amigos> amigos;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        UsuarioHateoas that = (UsuarioHateoas) o;
+        return Objects.equals(idUsuario, that.idUsuario);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), idUsuario);
+    }
 }

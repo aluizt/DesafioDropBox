@@ -39,6 +39,7 @@ public class UsuariosControl {
     }
     )
     public ResponseEntity<List<UsuarioHateoas>> listarTodosUsuarios(){
+
         UsuarioHateoasAssembler usuarioHateoasAssembler = new UsuarioHateoasAssembler();
 
        List<UsuarioHateoas> listaHateoas = usuarioHateoasAssembler
@@ -103,8 +104,10 @@ public class UsuariosControl {
             @ApiResponse(code = 404, message = "Não foi encontrado este usuario")
     }
     )
-    public ResponseEntity<UsuarioHateoas> alterarUsuario(@PathVariable("id") String id, @RequestBody Usuario usuario){
-
+    public ResponseEntity<UsuarioHateoas> alterarUsuario(
+            @PathVariable("id") String id,
+            @RequestBody UsuarioDTO usuarioDTO){
+        Usuario usuario=usuarioDTO.dtoFromUsuario();
         usuario.setIdUsuario(id);
         UsuarioHateoasAssembler usuarioHateoasAssembler = new UsuarioHateoasAssembler();
         UsuarioHateoas usuarioHateoas =usuarioHateoasAssembler.toResource(this.service.alterarUsuario(usuario));

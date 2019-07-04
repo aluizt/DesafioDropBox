@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.net.ftp.FTPFile;
 
 import java.util.List;
 
@@ -16,6 +15,6 @@ import java.util.List;
 public class Arquivos {
 
     private String id;
-    private List<String> arquivos;
+    private List<String> listaDeArquivos;
 
 }

@@ -18,8 +18,6 @@ public class AmigoService {
     @Autowired
     private UsuarioRepository repo;
 
-
-
     public List<Amigos> listarTodosAmigos(String id){
 
         Optional optional=this.repo.findById(id);
@@ -36,17 +34,15 @@ public class AmigoService {
 
             throw new ObjetoNaoEncontradoException("Usuario "+id+" não cadastrado");
         }
-
-
     }
 
 
-
-    public List<Amigos> incluirAmigo(String id, Amigos amigo)  {
-
+    public List<Amigos> incluirAmigo(String id, String idAmigo)  {
 
         Optional optionalUsuario =this.repo.findById(id);
-        Optional optionalAmigo   =this.repo.findById(amigo.getIdAmigo());
+        Optional optionalAmigo   =this.repo.findById(idAmigo);
+
+
 
         if(optionalUsuario.isPresent()) {
 
@@ -57,8 +53,12 @@ public class AmigoService {
                 Usuario usuario2 = (Usuario) optionalAmigo.get();
 
                 List<Amigos> listaAmigos = verificaNull(usuario);
+                Amigos amigo = new Amigos();
+                amigo.setIdAmigo(usuario2.getIdUsuario());
+                amigo.setNomeAmigo(usuario2.getNomeUsuario());
 
                 listaAmigos.add(amigo);
+
                 usuario.setAmigos(listaAmigos);
 
                 this.repo.save(usuario);

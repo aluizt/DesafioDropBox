@@ -5,6 +5,7 @@ import br.estagio.ftp.model.Amigos;
 import br.estagio.ftp.model.UsuarioHateoas;
 import br.estagio.ftp.service.AmigoService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -32,7 +32,9 @@ public class AmigosControl {
             @ApiResponse(code = 404, message = "Não foi encontrado os amigos deste usuario")
     }
     )
-    public ResponseEntity<List<Amigos>> listarTodosAmigosDoUsuario(@PathVariable("id") String id){
+    public ResponseEntity<List<Amigos>> listarTodosAmigosDoUsuario(
+            @ApiParam(value = "Identificador do usuário")
+            @PathVariable("id") String id){
 
         List<Amigos> lista = this.service.listarTodosAmigos(id);
 
@@ -49,8 +51,13 @@ public class AmigosControl {
             @ApiResponse(code = 404, message = "Não foi possivel incluir este amigo na lista do usuario")
     }
     )
-    public ResponseEntity<List<Amigos>> incluirAmigo(@PathVariable("id") String id, @RequestBody Amigos amigo){
-        List<Amigos> lista = this.service.incluirAmigo(id,amigo);
+    public ResponseEntity<List<Amigos>> incluirAmigo(
+            @ApiParam(value = "Identificador do usuário")
+            @PathVariable("id") String id,
+            @ApiParam(value = "Identificador do amigo do usuário")
+            @RequestParam(value = "idAmigo")String idAmigo){
+
+        List<Amigos> lista = this.service.incluirAmigo(id,idAmigo);
 
         return new ResponseEntity<>(lista, HttpStatus.CREATED);
     }
@@ -65,8 +72,11 @@ public class AmigosControl {
             @ApiResponse(code = 404, message = "Não foi possivel remover este amigo da lista do usuario")
     }
     )
-    public ResponseEntity<List<Amigos>> deletarAmigo(@PathVariable("idUsuario") String idUsuario,
-                                                     @PathVariable("idAmigo") String idAmigo){
+    public ResponseEntity<List<Amigos>> deletarAmigo(
+            @ApiParam(value = "Identificador do usuário")
+            @PathVariable("idUsuario") String idUsuario,
+            @ApiParam(value = "Identificador do amigo do usuário")
+            @PathVariable("idAmigo") String idAmigo){
 
         List<Amigos> lista = this.service.deletar(idUsuario,idAmigo);
 

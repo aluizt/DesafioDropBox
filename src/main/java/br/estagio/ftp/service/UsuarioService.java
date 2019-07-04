@@ -16,12 +16,15 @@ import java.util.Optional;
 @Service
 public class UsuarioService {
 
+
     @Autowired
     private UsuarioRepository repo;
 
 
     public List<Usuario> listarTodos() {
+
         List<Usuario> lista = repo.findAll();
+
         if(lista.isEmpty()){
             throw new ObjetoNaoEncontradoException("O arquivo não possui usuarios ");
         }

@@ -13,8 +13,10 @@ import java.util.List;
 public class AmigosHateoasAssembler extends ResourceAssemblerSupport<Amigos, AmigosHateoas> {
 
     public AmigosHateoasAssembler() {
+
         super(AmigosControl.class, AmigosHateoas.class);
     }
+
     @Override
     public AmigosHateoas toResource(Amigos amigo) {
         if(amigo==null){

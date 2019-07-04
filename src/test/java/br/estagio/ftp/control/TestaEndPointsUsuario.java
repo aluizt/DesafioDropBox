@@ -4,6 +4,7 @@ package br.estagio.ftp.control;
 import br.estagio.ftp.model.Usuario;
 import br.estagio.ftp.model.UsuarioDTO;
 import br.estagio.ftp.repository.UsuarioRepository;
+import br.estagio.ftp.service.exception.ObjetoNaoEncontradoException;
 import br.estagio.ftp.util.UsuariosParaTeste;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,12 +56,27 @@ public class TestaEndPointsUsuario {
         Assert.assertEquals(estatusRetornado,estatusEsperado);
     }
 
+    @Test
+    public void listaUsuariosRetornandoHttpStatus404(){
+        //cenario
+        BDDMockito.when(repository.findAll()).thenThrow(ObjetoNaoEncontradoException.class);
+
+        //ação
+        ResponseEntity<String> responseEntity = testRestTemplate.getForEntity("/usuarios",String.class);
+
+        HttpStatus statusEsperado  = HttpStatus.NOT_FOUND;
+        HttpStatus statusRetornado = responseEntity.getStatusCode();
+
+        //verificação
+        Assert.assertEquals(statusEsperado,statusRetornado);
+    }
 
     @Test
     public void getUsuarioPorIdRetornandoStatusCode200(){
         //cenario
-        Usuario usuario = usuariosParaTeste.criaUsuarioParaTeste();        //ação
+        Usuario usuario = usuariosParaTeste.criaUsuarioParaTeste();
         BDDMockito.when(repository.findById(usuario.getIdUsuario())).thenReturn(java.util.Optional.of(usuario));
+
         //ação
         ResponseEntity<String> responseEntity =
                 testRestTemplate.getForEntity("/usuarios/{id}",String.class,usuario.getIdUsuario());
@@ -69,13 +85,31 @@ public class TestaEndPointsUsuario {
         HttpStatus estatusRetornado = responseEntity.getStatusCode();
 
         //verificação
-
         Assert.assertEquals(estatusRetornado,estatusEsperado);
 
     }
 
     @Test
-    public void postUsuarioRetornandoStatusCode200(){
+    public void getUsuarioPorIdRetornandoStatusCode404(){
+        //cenario
+        Usuario usuario = usuariosParaTeste.criaUsuarioParaTeste();
+        BDDMockito.when(repository.findById(any())).thenThrow(ObjetoNaoEncontradoException.class);
+
+        //ação
+        ResponseEntity<String> responseEntity =
+                testRestTemplate.getForEntity("/usuarios/{id}",String.class,usuario.getIdUsuario());
+
+        HttpStatus statusEsperado  = HttpStatus.NOT_FOUND;
+        HttpStatus statusRetornado = responseEntity.getStatusCode();
+
+        //verificação
+
+        Assert.assertEquals(statusRetornado,statusEsperado);
+
+    }
+
+    @Test
+    public void postUsuarioRetornandoStatusCode201(){
         //cenario
         Usuario usuario=usuariosParaTeste.criaUsuarioParaTeste();
         UsuarioDTO usuarioDTO=usuariosParaTeste.criaUsuarioDTOParaTeste();
@@ -85,8 +119,31 @@ public class TestaEndPointsUsuario {
         ResponseEntity<Usuario> responseEntity =
                 testRestTemplate.postForEntity("/usuarios",usuarioDTO,Usuario.class);
 
+        HttpStatus estatusEsperado  = HttpStatus.CREATED;
+        HttpStatus estatusRetornado = responseEntity.getStatusCode();
+
         //verificação
-        Assert.assertEquals(responseEntity.getBody().getNomeUsuario(),usuario.getNomeUsuario());
+        Assert.assertEquals(estatusRetornado,estatusEsperado);
+    }
+
+    @Test
+    public void postUsuarioRetornandoStatusCode404(){
+        //cenario
+        Usuario usuario=usuariosParaTeste.criaUsuarioParaTeste();
+        UsuarioDTO usuarioDTO=usuariosParaTeste.criaUsuarioDTOParaTeste();
+        BDDMockito.when(repository.save(any(Usuario.class))).thenThrow(ObjetoNaoEncontradoException.class);
+
+        //ação
+        ResponseEntity<Usuario> responseEntity =
+                testRestTemplate.postForEntity("/usuarios",usuarioDTO,Usuario.class);
+
+        HttpStatus statusEsperado  = HttpStatus.NOT_FOUND;
+        HttpStatus statusRetornado = responseEntity.getStatusCode();
+
+        //verificação
+
+        Assert.assertEquals(statusRetornado,statusEsperado);
+
     }
 }
 

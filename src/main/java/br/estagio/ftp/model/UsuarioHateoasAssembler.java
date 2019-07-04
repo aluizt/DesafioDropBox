@@ -30,7 +30,7 @@ public class UsuarioHateoasAssembler extends ResourceAssemblerSupport<Usuario, U
         usuarioHateoas.setCpf(usuario.getCpf());
         usuarioHateoas.setPassword(usuario.getPassword());
 
-        List<Amigos> amigos = new ArrayList<Amigos>();
+        List<Amigos> amigos = new ArrayList<>();
 
         if(usuario.getAmigos()!=null) {
             for (Amigos a : usuario.getAmigos()) {
@@ -59,7 +59,7 @@ public class UsuarioHateoasAssembler extends ResourceAssemblerSupport<Usuario, U
 
 
             if(u.getAmigos()!=null) {
-                List<Amigos> amigos = new ArrayList<Amigos>();
+                List<Amigos> amigos = new ArrayList<>();
                 for (Amigos a : u.getAmigos()) {
                     amigos.add(a);
                 }
